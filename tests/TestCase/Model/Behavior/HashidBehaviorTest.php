@@ -89,26 +89,6 @@ class HashidBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testFind() {
-		$this->Addresses->behaviors()->Hashid->config('field', 'hashid');
-
-		$data = [
-			'city' => 'Foo'
-		];
-		$address = $this->Addresses->newEntity($data);
-		$res = $this->Addresses->save($address);
-
-		$id = $address->id;
-		$hasher = new Hashids();
-		$hashid = $hasher->encode($id);
-
-		$address = $this->Addresses->find('hashed', [HashidBehavior::HID => $hashid])->first();
-		$this->assertTrue((bool)$address);
-	}
-
-	/**
-	 * @return void
-	 */
 	public function testFindList() {
 		$this->Addresses->behaviors()->Hashid->config('field', 'hashid');
 		$this->Addresses->displayField('city');
@@ -416,4 +396,23 @@ class HashidBehaviorTest extends TestCase {
 		$this->assertEquals(['_isUnique' => 'This value is already in use'], $address->errors('city'));
 	}
 
+	/**
+	 * testExists method
+	 *
+	 * @return void
+	 */
+	public function testExists() {
+		$data = [
+			'city' => 'Foo'
+		];
+		$address = $this->Addresses->newEntity($data);
+		$result = $this->Addresses->save($address);
+
+		$id = $address->id;
+		$hasher = new Hashids();
+		$hashid = $hasher->encode($id);
+
+		$address = $this->Addresses->exists(['id' => $id]);
+		$this->assertTrue((bool)$address);
+	}
 }
